@@ -1,34 +1,54 @@
-<!DOCTYPE HTML>
-<html lang="zh-tw">
-
+<!doctype html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>Happy New Year</title>
-    <style>
-        * {
-            padding: 0;
-            margin: 0;
-        }
-
-        canvas {
-            background: #eee;
-            display: block;
-            margin: 0 auto;
-        }
-    </style>
-    <style>@import url('https://fonts.googleapis.com/css?family=Orbitron:400,500');</style>
-
-
-    <script language="JavaScript" src="lib/vec.js"></script>
-    <script language="JavaScript" src="lib/drawString.js"></script>
-    <script language="JavaScript" src="Firework.js"></script>
-    <script language="JavaScript" src="Particle.js"></script>
-    <script language="JavaScript" src="main.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Happy New Year ✦</title>
+  <meta name="description" content="Fireworks over the city, a countdown to midnight and a New Year wish for someone you love. Make your own card and send it.">
+  <meta name="theme-color" content="#07071a">
+  <meta property="og:title" content="Happy New Year ✦">
+  <meta property="og:description" content="Fireworks, a countdown to midnight and a wish — just for you.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
+  <canvas id="city" aria-hidden="true"></canvas>
+  <canvas id="sky" aria-hidden="true"></canvas>
 
+  <main class="card">
+    <p class="dear" id="dear" hidden></p>
+    <h1 class="title"><span class="t1">Happy</span> <span class="t2">New Year</span></h1>
+    <div class="year" id="year" aria-live="polite"></div>
+    <p class="wish" id="wish"></p>
+    <p class="chip" id="chip"></p>
+    <p class="msg" id="msg" hidden></p>
+    <div class="actions">
+      <button class="btn primary" id="launch"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l1.8 5.6H19l-4.6 3.4 1.8 5.6L12 13.2 7.8 16.6l1.8-5.6L5 7.6h5.2z"/></svg>Launch fireworks</button>
+      <button class="btn" id="send"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18v14H3zM3 6l9 7 9-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>Send a card</button>
+    </div>
+  </main>
+
+  <div class="count" id="count" hidden></div>
+
+  <dialog class="sheet" id="sheet">
+    <form method="dialog" id="form">
+      <h2>Send a New Year card</h2>
+      <label>To <input name="to" maxlength="40" placeholder="Mia" autocomplete="off"></label>
+      <label>From <input name="from" maxlength="40" placeholder="Your name" autocomplete="off"></label>
+      <label>A line from you <textarea name="msg" maxlength="160" rows="3" placeholder="Wishing you a bright, kind and brave new year."></textarea></label>
+      <div class="row">
+        <button class="btn" value="cancel" formnovalidate>Close</button>
+        <button class="btn" type="button" id="copy">Copy link</button>
+        <button class="btn primary" type="button" id="share" hidden>Share</button>
+      </div>
+      <p class="hint" id="hint"></p>
+    </form>
+  </dialog>
+
+  <footer class="foot">tap the sky ✦ made by <a href="https://www.tungdadev.com/">TungDaDev</a></footer>
+  <script src="script.js"></script>
 </body>
-
-
 </html>
