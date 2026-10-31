@@ -101,59 +101,18 @@
   }
   addEventListener('resize', resize); resize();
 
-  // ---------- fireworks ----------
-  const palettes = [['#ffd36e', '#fff1c2'], ['#ff6f91', '#ffd2dd'], ['#7ad7ff', '#e0f6ff'], ['#b28cff', '#eadfff'], ['#7dffb2', '#e6fff0'], ['#ff8a3d', '#ffe0c7']];
-  let shells = [], sparks = [];
-  function launch(tx, ty) {
-    const x = W * (.15 + Math.random() * .7);
-    tx = tx ?? x + (Math.random() - .5) * W * .2;
-    ty = ty ?? H * (.12 + Math.random() * .3);
-    const type = ['peony', 'peony', 'ring', 'willow', 'crossette', 'heart'][Math.floor(Math.random() * 6)];
-    const dy = H - ty, vy = -Math.sqrt(2 * .09 * dy);
-    shells.push({ x, y: H, vx: (tx - x) / (-vy / .09), vy, type, pal: palettes[Math.floor(Math.random() * palettes.length)] });
-  }
-  function burst(s) {
-    const n = s.type === 'willow' ? 70 : 110, [c1, c2] = s.pal;
-    for (let i = 0; i < n; i++) {
-      const a = (i / n) * Math.PI * 2 + Math.random() * .05;
-      let sp = s.type === 'ring' ? 3.4 : 1 + Math.random() * 3.6;
-      let vx = Math.cos(a) * sp, vy = Math.sin(a) * sp;
-      if (s.type === 'heart') { const t = a; vx = 16 * Math.sin(t) ** 3 * .2; vy = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) * .2; }
-      const willow = s.type === 'willow';
-      sparks.push({ x: s.x, y: s.y, px: s.x, py: s.y, vx, vy, life: 1, decay: willow ? .006 : .012 + Math.random() * .01, g: willow ? .035 : .045, drag: willow ? .975 : .985,
-        c: willow ? '#ffd36e' : Math.random() < .7 ? c1 : c2, split: s.type === 'crossette' && Math.random() < .25 });
-    }
-  }
-  function finale() { if (reduce) return; for (let i = 0; i < 16; i++) setTimeout(() => launch(), i * 180 + Math.random() * 120); }
-  let last = 0;
+  // ---------- fireworks (engine in fireworks.js) ----------
+  const fw = createFireworks($('fx'), { reduceMotion: reduce });
+  const finale = () => fw.play(fw.programs.finale);
+  fw.play(fw.programs.ambient, { loop: true });                // a choreographed show, about 40 s per round
   function frame(t) {
     ctx.clearRect(0, 0, W, H);
     for (const s of stars) { ctx.globalAlpha = reduce ? .6 : .3 + .5 * Math.sin(t / 900 + s.p) ** 2; ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, 7); ctx.fill(); }
     ctx.globalAlpha = 1;
-    if (!reduce && t - last > 1300 + Math.random() * 900) { last = t; launch(); }
-    ctx.globalCompositeOperation = 'lighter';
-    shells = shells.filter(s => {
-      s.x += s.vx; s.y += s.vy; s.vy += .09;
-      ctx.fillStyle = '#ffe9b0'; ctx.beginPath(); ctx.arc(s.x, s.y, 2, 0, 7); ctx.fill();
-      ctx.fillStyle = 'rgba(255,200,120,.35)'; ctx.beginPath(); ctx.arc(s.x, s.y + 6, 1.5, 0, 7); ctx.fill();
-      if (s.vy >= -.6) { burst(s); return false; }
-      return true;
-    });
-    const born = [];
-    sparks = sparks.filter(p => {
-      p.px = p.x; p.py = p.y; p.vx *= p.drag; p.vy = p.vy * p.drag + p.g; p.x += p.vx; p.y += p.vy; p.life -= p.decay;
-      if (p.split && p.life < .55) { p.split = false; for (let k = 0; k < 4; k++) { const a = k * Math.PI / 2 + Math.PI / 4; born.push({ ...p, vx: Math.cos(a) * 1.6, vy: Math.sin(a) * 1.6, life: .5, decay: .02, split: false }); } return false; }
-      if (p.life <= 0) return false;
-      ctx.globalAlpha = Math.min(1, p.life * 1.4) * (p.life < .3 && Math.random() < .3 ? .3 : 1);
-      ctx.strokeStyle = p.c; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.moveTo(p.px, p.py); ctx.lineTo(p.x, p.y); ctx.stroke();
-      return true;
-    });
-    sparks.push(...born);
-    ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
-  sky.addEventListener('pointerdown', e => launch(e.clientX, Math.min(e.clientY, horizon - 40)));
+  sky.addEventListener('pointerdown', e => fw.launch({ x: e.clientX, y: Math.min(e.clientY, horizon - 40) }));
   $('launch').addEventListener('click', finale);
 
   // ---------- send a card ----------

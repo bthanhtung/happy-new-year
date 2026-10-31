@@ -14,7 +14,7 @@ body {
 }
 button, input, textarea { font: inherit; color: inherit; }
 canvas { position: fixed; inset: 0; width: 100%; height: 100%; }
-#city { pointer-events: none; }
+#city, #fx { pointer-events: none; }
 #sky { cursor: crosshair; }
 
 .counting .card { opacity: .18; filter: blur(2px); }
